@@ -1,0 +1,21 @@
+{
+  "title": "Denizlerin Gizemli Tarihi",
+  "source_note": "ÖRNEK DEMO — Güncel haber değildir",
+  "scenes": [
+    {
+      "heading": "DENİZLERİN SIRLARI",
+      "kind": "ship",
+      "narration": "Denizlerin derinliklerinde insanlık tarihinden izler saklıdır."
+    },
+    {
+      "heading": "ESKİ YOLCULUKLAR",
+      "kind": "map",
+      "narration": "Yüzyıllar önce denizciler yeni ticaret yolları keşfetmeye çalışıyordu."
+    },
+    {
+      "heading": "GEÇMİŞİN İZLERİ",
+      "kind": "artifact",
+      "narration": "Arkeolojik buluntular, geçmişteki hayatı anlamamızı sağlar."
+    }
+  ]
+}
