@@ -74,7 +74,7 @@ def compose(manifest,voice_dir,output,seconds=60,fps=24):
         delay=int(events[i][0]*1000)
         filters.append(f"[{i+1}:a]aresample=48000,adelay={delay}|{delay}[v{i}]")
     filters.append("".join(f"[v{i}]" for i in range(len(lines)))+f"amix=inputs={len(lines)}:duration=longest:normalize=0,alimiter=limit=0.90[a]")
-    cmd=["ffmpeg","-y","-loglevel","error","-f","rawvideo","-pixel_format","rgb24","-video_size","540x960","-framerate",str(fps),"-i","pipe:0",*inputs,"-filter_complex",";".join(filters),"-map","0:v","-map","[a]","-c:v","libx264","-preset","veryfast","-crf","21","-pix_fmt","yuv420p","-c:a","aac","-b:a","160k","-t",str(seconds),"-movflags","+faststart",str(output)]
+    cmd=["ffmpeg","-y","-loglevel","error","-f","rawvideo","-pixel_format","rgb24","-video_size","540x960","-framerate",str(fps),"-i","pipe:0",*inputs,"-filter_complex",";".join(filters),"-map","0:v","-map","[a]","-vf","scale=1080:1920:flags=lanczos","-c:v","libx264","-preset","veryfast","-crf","21","-pix_fmt","yuv420p","-c:a","aac","-b:a","160k","-t",str(seconds),"-movflags","+faststart",str(output)]
     p=subprocess.Popen(cmd,stdin=subprocess.PIPE)
     try:
         for frame in range(seconds*fps):
