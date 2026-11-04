@@ -1,8 +1,6 @@
 name: Daily 2D explainer draft
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '17 7 * * *' # Türkiye saati 10:17
 permissions:
   contents: read
 jobs:
