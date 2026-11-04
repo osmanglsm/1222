@@ -1,0 +1,44 @@
+{
+  "lines": [
+    {
+      "speaker": "anlatici",
+      "text": "Kerem'in taşındığı apartman on iki katlıydı. Ama o gece asansör, on üçüncü katta durdu."
+    },
+    {
+      "speaker": "kerem",
+      "text": "On üç mü? Bu binada on üçüncü kat yok ki."
+    },
+    {
+      "speaker": "anlatici",
+      "text": "Düğmeye dokunmamıştı. Asansör kendi kendine yükselmişti."
+    },
+    {
+      "speaker": "anlatici",
+      "text": "Kapılar açıldığında karşısında karanlık bir koridor vardı. Duvar kâğıdı, lambalar... Her şey kendi katıyla aynıydı."
+    },
+    {
+      "speaker": "anlatici",
+      "text": "Sonra bir kapı gördü. Üzerinde bin iki yüz yedi yazıyordu. Kendi dairesinin numarası."
+    },
+    {
+      "speaker": "kerem",
+      "text": "Bu... nasıl mümkün olabilir?"
+    },
+    {
+      "speaker": "anlatici",
+      "text": "Kerem elini kapı koluna uzattı. Tam çevirecekken içeriden bir ses geldi."
+    },
+    {
+      "speaker": "diger_kerem",
+      "text": "Sakın içeri girme."
+    },
+    {
+      "speaker": "kerem",
+      "text": "Kimsin sen?"
+    },
+    {
+      "speaker": "diger_kerem",
+      "text": "Ben girdim."
+    }
+  ]
+}
