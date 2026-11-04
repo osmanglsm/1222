@@ -1,0 +1,41 @@
+name: 13 Kat - Turkish narrated episode 01
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 7 * * *'
+permissions:
+  contents: read
+jobs:
+  episode:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install CPU speech and video dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --upgrade pip
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install ema-lightning Pillow
+      - name: Generate Turkish neural voice (no robotic fallback)
+        run: python scripts/turkish_voice.py --script content/13kat_episode01.json --output output/13kat_voice
+      - name: Render clean narrated 13 Kat episode
+        run: python scripts/episode_pipeline.py --voice-dir output/13kat_voice --output output/13kat_episode01.mp4
+      - name: Validate MP4
+        run: |
+          ffprobe -v error -show_entries stream=codec_name,width,height -show_entries format=duration -of json output/13kat_episode01.mp4
+          python -m unittest discover -s tests -p 'test_13kat*.py' -v
+      - name: Upload episode and voice files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 13kat-episode01-turkish-voice
+          path: |
+            output/13kat_episode01.mp4
+            output/13kat_episode01.timing.json
+            output/13kat_voice/
+          retention-days: 7
