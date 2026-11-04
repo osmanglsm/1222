@@ -1,0 +1,68 @@
+{
+  "title": "Voyager 1: Yıldızlararasına Ulaşan Yolculuk",
+  "description": "1977’de başlayan Voyager 1 yolculuğu ve 2012’de aşılan heliopoz. Görseller şematiktir; ölçekli değildir. Kaynaklar: NASA/JPL.",
+  "tags": [
+    "Voyager1",
+    "Uzay",
+    "Bilim",
+    "Keşif",
+    "TürkçeBilgi"
+  ],
+  "sources": [
+    {
+      "url": "https://www.jpl.nasa.gov/missions/voyager-1/",
+      "checked_on": "2026-11-04",
+      "claims": [
+        "5 Eylül 1977 fırlatma",
+        "Jüpiter ve Satürn incelemeleri",
+        "Altın Plak"
+      ]
+    },
+    {
+      "url": "https://science.nasa.gov/mission/voyager/interstellar-mission/",
+      "checked_on": "2026-11-04",
+      "claims": [
+        "25 Ağustos 2012 yıldızlararası uzaya giriş",
+        "heliopoz sınırı"
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "heading": "BİR SINIR AŞILDI",
+      "kind": "space",
+      "label": "İNSANLIĞIN UZAY YOLCULUĞU",
+      "narration": "İnsan yapımı bir araç, yıldızlararası uzaya nasıl ulaştı?"
+    },
+    {
+      "heading": "YOLCULUK: 1977",
+      "kind": "space",
+      "label": "5 EYLÜL 1977",
+      "narration": "Voyager bir, beş Eylül bin dokuz yüz yetmiş yedide fırlatıldı. İlk hedefi başka bir yıldıza ulaşmak değildi. Jüpiter ve Satürn sistemlerini yakından incelemek için yola çıkmıştı."
+    },
+    {
+      "heading": "DEV GEZEGENLER",
+      "kind": "space",
+      "label": "JÜPİTER • SATÜRN",
+      "narration": "Bu yolculuk, uzak gezegenler hakkında yeni bilgiler getirdi. Ama görev, gezegenlerin yanından geçince bitmedi. Uzay aracı daha uzaklara doğru ilerledi ve araştırmanın sorusu değişti: Güneş'in oluşturduğu uzay ortamının sınırı neredeydi?"
+    },
+    {
+      "heading": "GÖRÜNMEYEN SINIR",
+      "kind": "space",
+      "label": "HELİOPOZ • ŞEMATİK",
+      "narration": "Güneş rüzgârının oluşturduğu bölgeye heliosfer deniyor. Bu bölgenin dış sınırıysa heliopoz. Voyager bir, yirmi beş Ağustos iki bin on ikide bu sınırı aşarak yıldızlararası uzaya giren ilk insan yapımı nesne oldu."
+    },
+    {
+      "heading": "İNSANLIKTAN BİR MESAJ",
+      "kind": "space",
+      "label": "ALTIN PLAK",
+      "narration": "Üstelik yanında dünyamızdan bir hatıra taşıyor: Altın Plak. İçindeki sesler ve görüntüler, gezegenimizin hikâyesini anlatmak için seçildi. Bu bir iletişim denemesi; birilerinin plağı bulduğunun kanıtı değil."
+    },
+    {
+      "heading": "SEN NE GÖNDERİRDİN?",
+      "kind": "space",
+      "label": "DÜNYADAN BİR HATIRA",
+      "narration": "Voyager'ın hikâyesi, bir keşif görevinin başlangıçtaki hedeflerinin ötesine nasıl uzanabildiğini gösteriyor. Sen insanlığı anlatmak için uzaya tek bir ses gönderebilseydin, ne seçerdin?"
+    }
+  ]
+}
