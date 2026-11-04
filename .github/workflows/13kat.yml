@@ -1,5 +1,11 @@
 name: 13 Kat - Turkish narrated episode 01
 on:
+  push:
+    paths:
+      - 'scripts/episode_pipeline.py'
+      - 'scripts/turkish_voice.py'
+      - 'content/13kat_episode01.json'
+      - '.github/workflows/13kat.yml'
   workflow_dispatch:
   schedule:
     - cron: '17 7 * * *'
