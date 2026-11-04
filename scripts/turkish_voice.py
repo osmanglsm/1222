@@ -1,39 +1,28 @@
 #!/usr/bin/env python3
-"""Open-source Turkish TTS for 13. Kat using EMA Lightning (Apache-2.0).
-Generates one WAV per line and a timing manifest; no silent fallback to robotic speech.
-Usage: python scripts/turkish_voice.py --script content/13kat_episode01.json --output output/voice
-"""
-import argparse
-import json
-import wave
+"""EMA Lightning Turkish TTS. Generates WAV and word-timing metadata."""
+import argparse,json
 from pathlib import Path
-
-def main():
-    parser=argparse.ArgumentParser()
-    parser.add_argument("--script",default="content/13kat_episode01.json")
-    parser.add_argument("--output",default="output/voice")
-    parser.add_argument("--speed",type=float,default=0.94)
-    args=parser.parse_args()
-    if not 0.75 <= args.speed <= 1.25:
-        parser.error("speed must be between 0.75 and 1.25 for intelligibility")
+def generate(script_path,output_dir,speed=0.96):
     from ema_lightning import EMA
-    lines=json.loads(Path(args.script).read_text(encoding="utf-8"))["lines"]
-    out=Path(args.output)
-    out.mkdir(parents=True,exist_ok=True)
-    tts=EMA(device="cpu")
+    if not 0.75 <= speed <= 1.25: raise ValueError("Invalid speech speed")
+    lines=json.loads(Path(script_path).read_text(encoding="utf8"))["lines"]
+    out=Path(output_dir);out.mkdir(parents=True,exist_ok=True)
+    tts=EMA()
     manifest=[]
-    for index,line in enumerate(lines):
-        text=line["text"].strip()
-        if not text:
-            continue
-        path=out/f"{index:02d}_{line['speaker']}.wav"
-        speech=tts.say(text,path=str(path),speed=args.speed,seed=1300+index)
-        if speech.duration <= 0:
-            raise RuntimeError(f"Empty audio for line {index}")
-        manifest.append({"speaker":line["speaker"],"text":text,"file":path.name,"duration":round(speech.duration,3),"sample_rate":speech.sample_rate})
+    for i,line in enumerate(lines):
+        path=out/f"{i:02d}_{line['speaker']}.wav"
+        speech=tts.say(line["text"],path=str(path),speed=speed,seed=1300+i)
+        if speech.duration<=0 or not path.exists():raise RuntimeError(f"Missing speech for line {i}")
+        manifest.append({"speaker":line["speaker"],"text":line["text"],"file":path.name,
+          "duration":round(float(speech.duration),3),"sample_rate":int(speech.sample_rate),
+          "words":[{"text":w.text,"start":round(float(w.start),3),"end":round(float(w.end),3)} for w in speech.words]})
         print(f"{path}: {speech.duration:.2f}s")
-    (out/"manifest.json").write_text(json.dumps({"engine":"EMA Lightning","license":"Apache-2.0","lines":manifest},ensure_ascii=False,indent=2),encoding="utf-8")
-    print("Created",len(manifest),"speech files; verify pronunciation before publishing.")
-
-if __name__=="__main__":
-    main()
+    (out/"manifest.json").write_text(json.dumps({"engine":"EMA Lightning","lines":manifest},ensure_ascii=False,indent=2),encoding="utf8")
+    return manifest
+def main():
+    p=argparse.ArgumentParser()
+    p.add_argument("--script",default="content/13kat_episode01.json")
+    p.add_argument("--output",default="output/13kat_voice")
+    p.add_argument("--speed",type=float,default=0.96)
+    a=p.parse_args();generate(a.script,a.output,a.speed)
+if __name__=="__main__":main()
