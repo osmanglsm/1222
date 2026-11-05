@@ -18,6 +18,10 @@ def paint(scene,t,caption=""):
     im=Image.new("RGB",(540,960),(12,27,35));d=ImageDraw.Draw(im)
     d.rectangle((0,100,540,750),fill=(27,61,69))
     drift=int(8*math.sin(t*.65))
+    # Cinematic texture: fixed grain, subtle depth lines, no labels or UI overlays.
+    for k in range(14):
+        x=(k*137+int(t*3))%540;y=180+(k*97)%540
+        d.ellipse((x,y,x+1,y+1),fill=(92,111,109))
     if scene in (0,1):
         d.rectangle((95,150,445,745),fill=(8,24,33),outline=(104,123,117),width=9)
         d.rectangle((118,178,422,715),fill=(32,60,65))
@@ -49,12 +53,14 @@ def paint(scene,t,caption=""):
             d.polygon([(181,480),(358,480),(390,715),(148,715)],fill=(14,19,24))
     if caption:
         f=font(25,True);lines=wrap(d,caption,f,450)[:3]
-        d.rounded_rectangle((25,790,515,810+len(lines)*37),radius=12,fill=(239,224,192))
-        for j,line in enumerate(lines):d.text((270,800+j*37),line,font=f,fill=(25,37,43),anchor="mt")
+        top=824-(len(lines)-1)*18
+        d.rounded_rectangle((25,top-12,515,top+len(lines)*37+8),radius=12,fill=(239,224,192))
+        for j,line in enumerate(lines):
+            d.text((270,top+j*37),line,font=f,fill=(25,37,43),anchor="mt")
     return im
 def duration(path):
     return float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","default=noprint_wrappers=1:nokey=1",str(path)],text=True))
-def compose(manifest,voice_dir,output,seconds=60,fps=24):
+def compose(manifest,voice_dir,output,seconds=60,fps=30):
     lines=manifest["lines"]
     if len(lines)!=10:raise ValueError("Episode 01 requires 10 dialogue lines")
     output.parent.mkdir(parents=True,exist_ok=True)
@@ -72,7 +78,12 @@ def compose(manifest,voice_dir,output,seconds=60,fps=24):
     for i,item in enumerate(lines):
         inputs+=["-i",str(voice_dir/item["file"])]
         delay=int(events[i][0]*1000)
-        filters.append(f"[{i+1}:a]aresample=48000,adelay={delay}|{delay}[v{i}]")
+        speaker=item.get("speaker","anlatici")
+        # Subtle character distinction without artificial robot pitch shifts.
+        eq={"anlatici":"equalizer=f=170:t=q:w=1:g=1.0",
+            "kerem":"equalizer=f=240:t=q:w=1:g=-1.5",
+            "diger_kerem":"equalizer=f=350:t=q:w=1:g=-3.0,aecho=0.8:0.6:75:0.15"}[speaker]
+        filters.append(f"[{i+1}:a]aresample=48000,{eq},volume=0.92,adelay={delay}|{delay}[v{i}]")
     filters.append("".join(f"[v{i}]" for i in range(len(lines)))+f"amix=inputs={len(lines)}:duration=longest:normalize=0,alimiter=limit=0.90[a]")
     cmd=["ffmpeg","-y","-loglevel","error","-f","rawvideo","-pixel_format","rgb24","-video_size","540x960","-framerate",str(fps),"-i","pipe:0",*inputs,"-filter_complex",";".join(filters),"-map","0:v","-map","[a]","-vf","scale=1080:1920:flags=lanczos","-c:v","libx264","-preset","veryfast","-crf","21","-pix_fmt","yuv420p","-c:a","aac","-b:a","160k","-t",str(seconds),"-movflags","+faststart",str(output)]
     p=subprocess.Popen(cmd,stdin=subprocess.PIPE)
@@ -83,10 +94,21 @@ def compose(manifest,voice_dir,output,seconds=60,fps=24):
             idx=event[2] if event else next((s for a,b,s,txt in reversed(events) if a<=t),0)
             caption=event[3] if event else ""
             if caption:
-                words=caption.split();phase=(t-event[0])/(event[1]-event[0])
-                chunks=max(1,math.ceil(len(words)/8));which=min(chunks-1,int(phase*chunks))
-                lo=round(which*len(words)/chunks);hi=round((which+1)*len(words)/chunks)
-                caption=" ".join(words[lo:hi])
+                # Use speech model's word timestamps rather than proportional estimates.
+                line_index=next(i for i,e in enumerate(events) if e[0]<=t<e[1])
+                word_marks=lines[line_index].get("words",[])
+                if word_marks:
+                    elapsed=t-event[0]
+                    active=next((j for j,w in enumerate(word_marks) if w["start"]<=elapsed<w["end"]),None)
+                    if active is None:
+                        active=next((j for j,w in enumerate(word_marks) if w["start"]>elapsed),len(word_marks)-1)
+                    start=(active//6)*6
+                    caption=" ".join(w["text"] for w in word_marks[start:start+6])
+                else:
+                    words=caption.split();phase=(t-event[0])/(event[1]-event[0])
+                    chunks=max(1,math.ceil(len(words)/6));which=min(chunks-1,int(phase*chunks))
+                    lo=round(which*len(words)/chunks);hi=round((which+1)*len(words)/chunks)
+                    caption=" ".join(words[lo:hi])
             p.stdin.write(paint(idx,t,caption).tobytes())
     finally:p.stdin.close()
     if p.wait():raise RuntimeError("FFmpeg failed")
