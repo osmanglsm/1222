@@ -1,0 +1,38 @@
+name: Gunluk Otomatik Gerilim Dizisi Uretici
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # Her gün Türkiye saati ile sabah 09:00'da otomatik çalışır
+  workflow_dispatch: # İstediğin an tek tıkla manuel çalıştırma butonu ekler
+
+permissions:
+  contents: write
+
+jobs:
+  build_video:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Depoyu Klonla
+        uses: actions/checkout@v4
+
+      - name: Python Kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: FFmpeg ve Turkce Ses Motorunu (Edge-TTS) Kur
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          pip install edge-tts
+
+      - name: Yeni Bolum Videosunu Uret
+        run: python otomatik_uretici.py
+
+      - name: Uretilen MP4 Videosunu Depoya Kaydet
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "Otonom Video Motoru"
+          git add output/*.mp4 dizi_hafizasi.json
+          git commit -m "Otomatik Yeni Bolum MP4 Videosu Eklendi" || echo "Yeni degisiklik yok"
+          git push
